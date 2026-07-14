@@ -24,8 +24,9 @@ class ImportRaceResultsJob implements ShouldQueue
 
     public function handle(): void
     {
-        $response = Http::get("https://api.jolpi.ca/ergast/f1/{$this->season->year}/{$this->round}/results.json")
-        ->json('MRData.RaceTable.Races.0'); // Acessa o índice 0 do array de corridas
+        $response = Http::get("https://api.jolpi.ca/ergast/f1/{$this->season->year}/{$this->round}/results.json", [
+            'limit' => 100,
+        ])->json('MRData.RaceTable.Races.0');
 
 
         if (!$response) {
@@ -49,7 +50,7 @@ class ImportRaceResultsJob implements ShouldQueue
                 'circuit_id' => $circuit->id,
                 'name' => $response['raceName'],
                 'date' => $response['date'],
-                'time' => $response['time'] ?? null,
+                'time' => isset($response['time']) ? rtrim($response['time'], 'Z') : null,
             ]
         );
 
