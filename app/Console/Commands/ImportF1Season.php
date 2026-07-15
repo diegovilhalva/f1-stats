@@ -17,7 +17,7 @@ class ImportF1Season extends Command
         $year = $this->argument('year');
         $season = Season::firstOrCreate(['year' => $year]);
 
-        $races = Http::get("https://api.jolpi.ca/ergast/f1/{$year}.json")
+        $races = Http::get("https://api.jolpi.ca/ergast/f1/{$year}.json", ['limit' => 100])
             ->json('MRData.RaceTable.Races') ?? [];
 
         if (empty($races)) {
