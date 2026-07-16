@@ -8,7 +8,7 @@ RUN chmod +x /usr/local/bin/install-php-extensions && \
     nginx supervisor nodejs npm \
     libpng-dev libzip-dev postgresql-dev \
     && docker-php-ext-install pdo_pgsql pgsql zip gd \
-    && install-php-extensions redis #
+    && install-php-extensions redis
 
 WORKDIR /app
 
@@ -25,7 +25,8 @@ RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache
 COPY package.json package-lock.json ./
 RUN npm ci && npm run build
 
-RUN php artisan config:cache && php artisan route:cache
+
+RUN php artisan route:cache && php artisan event:cache
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
