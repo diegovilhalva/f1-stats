@@ -12,22 +12,34 @@ defineProps<{
 </script>
 
 <template>
-    <div class="min-h-screen bg-neutral-950 text-neutral-100">
-        <div class="mx-auto max-w-3xl px-6 py-16">
-            <h1 class="text-3xl font-bold tracking-tight">F1 Stats</h1>
-            <p class="mt-2 text-neutral-400">Temporadas importadas</p>
+    <div class="min-h-screen bg-track-950 font-sans text-ink-100">
+        <header class="border-b border-track-800 bg-track-950">
+            <div class="mx-auto max-w-5xl px-6 py-4">
+                <span class="font-display text-xl font-bold tracking-wide">F1 STATS</span>
+            </div>
+        </header>
 
-            <ul class="mt-10 divide-y divide-neutral-800 rounded-lg border border-neutral-800">
-                <li v-for="season in seasons" :key="season.id">
-                    <Link
-                        :href="`/seasons/${season.year}`"
-                        class="flex items-center justify-between px-5 py-4 transition hover:bg-neutral-900"
-                    >
-                        <span class="text-lg font-medium">{{ season.year }}</span>
-                        <span class="text-neutral-500">&rarr;</span>
-                    </Link>
-                </li>
-            </ul>
+        <div class="mx-auto max-w-5xl px-6 py-8">
+            <h1 class="font-display text-3xl font-bold">Temporadas</h1>
+            <p class="mt-1 font-mono text-xs uppercase tracking-wider text-ink-400">
+                {{ seasons.length }} disponíveis
+            </p>
+
+            <div class="mt-8 grid grid-cols-4 gap-3">
+                <Link
+                    v-for="season in seasons"
+                    :key="season.id"
+                    :href="`/seasons/${season.year}`"
+                    class="group rounded border border-track-800 bg-track-900 p-5 transition hover:border-leader"
+                >
+                    <p class="font-display text-3xl font-bold text-ink-100 group-hover:text-leader">
+                        {{ season.year }}
+                    </p>
+                    <p class="mt-1 font-mono text-xs uppercase tracking-wider text-ink-400">
+                        Ver temporada &rarr;
+                    </p>
+                </Link>
+            </div>
         </div>
     </div>
 </template>

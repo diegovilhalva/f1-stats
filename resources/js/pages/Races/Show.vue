@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import AppNav from '@/components/AppNav.vue';
 import { Link } from '@inertiajs/vue3';
+import { teamColor } from '@/lib/teamColors';
 
 interface Driver {
     id: number;
@@ -8,8 +10,9 @@ interface Driver {
     code: string | null;
 }
 
-interface Constructor {
+interface ConstructorRef {
     id: number;
+    ref: string;
     name: string;
 }
 
@@ -21,7 +24,7 @@ interface Result {
     status: string;
     fastest_lap_time: string | null;
     driver: Driver;
-    constructor: Constructor;
+    constructor: ConstructorRef;
 }
 
 const props = defineProps<{
@@ -35,40 +38,72 @@ const props = defineProps<{
         results: Result[];
     };
 }>();
+
+function rowAccent(result: Result): string {
+    if (result.status !== 'Finished' && !result.status.includes('Lap')) return 'border-l-dnf';
+    if (result.position && result.position <= 3) return 'border-l-leader';
+    if (result.position && result.position <= 10) return 'border-l-points';
+    return 'border-l-track-800';
+}
 </script>
 
 <template>
-    <div class="min-h-screen bg-neutral-950 text-neutral-100">
-        <div class="mx-auto max-w-3xl px-6 py-16">
-            <Link :href="`/seasons/${props.season.year}`" class="text-sm text-neutral-500 hover:text-neutral-300">
-                &larr; Temporada {{ props.season.year }}
+    <div class="min-h-screen bg-track-950 font-sans text-ink-100">
+        <AppNav :season="props.season.year" />
+
+        <div class="mx-auto max-w-5xl px-6 py-8">
+            <Link
+                :href="`/seasons/${props.season.year}`"
+                class="font-mono text-xs uppercase tracking-wider text-ink-400 hover:text-ink-100"
+            >
+                &larr; Calendário {{ props.season.year }}
             </Link>
 
-            <h1 class="mt-4 text-3xl font-bold tracking-tight">{{ props.race.name }}</h1>
-            <p class="mt-1 text-neutral-400">{{ props.race.circuit.name }} &middot; {{ props.race.date }}</p>
+            <div class="mt-4 flex items-center gap-4">
+                <span class="rounded border border-track-800 px-3 py-1 font-mono text-xs text-ink-400">
+                    RND {{ props.race.round }}
+                </span>
+                <h1 class="font-display text-3xl font-bold">{{ props.race.name }}</h1>
+            </div>
+            <p class="mt-1 font-mono text-xs text-ink-400">
+                {{ props.race.circuit.name }} &middot; {{ new Date(props.race.date).toLocaleDateString() }}
+            </p>
 
-            <table class="mt-10 w-full text-left text-sm">
-                <thead class="border-b border-neutral-800 text-neutral-500">
-                    <tr>
-                        <th class="py-2 pr-4">Pos</th>
-                        <th class="py-2 pr-4">Piloto</th>
-                        <th class="py-2 pr-4">Equipe</th>
-                        <th class="py-2 pr-4">Grid</th>
-                        <th class="py-2 pr-4">Pontos</th>
-                        <th class="py-2">Status</th>
+            <table class="mt-8 w-full border-collapse text-sm">
+                <thead>
+                    <tr class="border-b border-track-800 font-mono text-xs uppercase tracking-wider text-ink-400">
+                        <th class="py-2 pl-4 text-left">Pos</th>
+                        <th class="py-2 text-left">Piloto</th>
+                        <th class="py-2 text-right">Grid</th>
+                        <th class="py-2 text-right">Volta rápida</th>
+                        <th class="py-2 text-right">Pts</th>
+                        <th class="py-2 pr-4 text-right">Status</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-neutral-900">
-                    <tr v-for="result in props.race.results" :key="result.id">
-                        <td class="py-2 pr-4">{{ result.position ?? '-' }}</td>
-                        <td class="py-2 pr-4 font-medium">
-                            {{ result.driver.forename }} {{ result.driver.surname }}
-                            <span class="text-neutral-500">{{ result.driver.code }}</span>
+                <tbody>
+                    <tr
+                        v-for="result in props.race.results"
+                        :key="result.id"
+                        class="border-b border-l-2 border-track-800/60 bg-track-900/40"
+                        :class="rowAccent(result)"
+                    >
+                        <td class="py-3 pl-4 font-mono font-semibold">{{ result.position ?? '-' }}</td>
+                        <td class="py-3">
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class="h-4 w-1 rounded-full"
+                                    :style="{ backgroundColor: teamColor(result.constructor.ref) }"
+                                />
+                                <span class="font-medium">
+                                    {{ result.driver.forename }} {{ result.driver.surname }}
+                                </span>
+                                <span class="font-mono text-xs text-ink-400">{{ result.driver.code }}</span>
+                            </div>
                         </td>
-                        <td class="py-2 pr-4 text-neutral-400">{{ result.constructor.name }}</td>
-                        <td class="py-2 pr-4 text-neutral-400">{{ result.grid ?? '-' }}</td>
-                        <td class="py-2 pr-4">{{ result.points }}</td>
-                        <td class="py-2 text-neutral-400">{{ result.status }}</td>
+                        <td class="py-3 text-right font-mono text-ink-400">{{ result.grid ?? '-' }}</td>
+                        <td class="py-3 text-right font-mono">{{ result.fastest_lap_time ?? '-' }}</td>
+                        <td class="py-3 text-right font-mono font-semibold">{{ result.points }}</td>
+                        <td class="py-3 pr-4 text-right font-mono text-xs text-ink-400">{{ result.status }}</td>
                     </tr>
                 </tbody>
             </table>

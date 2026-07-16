@@ -3,9 +3,19 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
-@theme inline {
-    --font-sans:
-        Instrument Sans, ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+
+@theme {
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --color-track-950: #0b0d11;
+    --color-track-900: #14171c;
+    --color-track-800: #23272e;
+    --color-ink-100: #edeef0;
+    --color-ink-400: #7a818c;
+    --color-leader: #5b8def;
+    --color-points: #33c481;
+    --color-caution: #e8b93f;
+    --color-dnf: #e14f4f;
 }

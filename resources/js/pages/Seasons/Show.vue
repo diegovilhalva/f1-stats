@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppNav from '@/components/AppNav.vue';
 import { Link } from '@inertiajs/vue3';
 
 interface Circuit {
@@ -22,34 +23,30 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="min-h-screen bg-neutral-950 text-neutral-100">
-        <div class="mx-auto max-w-3xl px-6 py-16">
-            <Link href="/" class="text-sm text-neutral-500 hover:text-neutral-300">&larr; Temporadas</Link>
+    <div class="min-h-screen bg-track-950 font-sans text-ink-100">
+        <AppNav :season="props.season.year" />
 
-            <div class="mt-4 flex items-baseline justify-between">
-                <h1 class="text-3xl font-bold tracking-tight">Temporada {{ props.season.year }}</h1>
+        <div class="mx-auto max-w-5xl px-6 py-8">
+            <h1 class="font-display text-3xl font-bold">Calendário {{ props.season.year }}</h1>
+            <p class="mt-1 font-mono text-xs uppercase tracking-wider text-ink-400">
+                {{ props.races.length }} corridas
+            </p>
+
+            <div class="mt-8 divide-y divide-track-800 rounded border border-track-800 bg-track-900">
                 <Link
-                    :href="`/seasons/${props.season.year}/standings`"
-                    class="text-sm text-neutral-400 underline hover:text-neutral-200"
+                    v-for="race in props.races"
+                    :key="race.id"
+                    :href="`/seasons/${props.season.year}/races/${race.round}`"
+                    class="flex items-center gap-5 px-5 py-4 transition hover:bg-track-800/40"
                 >
-                    Ver classificação
+                    <span class="w-10 font-mono text-xs text-ink-400">RND {{ race.round }}</span>
+                    <div class="flex-1">
+                        <p class="font-medium">{{ race.name }}</p>
+                        <p class="font-mono text-xs text-ink-400">{{ race.circuit.name }}</p>
+                    </div>
+                    <span class="font-mono text-xs text-ink-400">{{ new Date(race.date).toLocaleDateString()}}</span>
                 </Link>
             </div>
-
-            <ul class="mt-10 divide-y divide-neutral-800 rounded-lg border border-neutral-800">
-                <li v-for="race in props.races" :key="race.id">
-                    <Link
-                        :href="`/seasons/${props.season.year}/races/${race.round}`"
-                        class="flex items-center justify-between px-5 py-4 transition hover:bg-neutral-900"
-                    >
-                        <div>
-                            <span class="text-neutral-500">R{{ race.round }}</span>
-                            <span class="ml-3 font-medium">{{ race.name }}</span>
-                        </div>
-                        <span class="text-sm text-neutral-500">{{ race.circuit.name }}</span>
-                    </Link>
-                </li>
-            </ul>
         </div>
     </div>
 </template>
