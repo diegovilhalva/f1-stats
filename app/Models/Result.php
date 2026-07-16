@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Result extends Model
+
 {
+    use HasFactory;
     protected $fillable = [
         'race_id', 'driver_id', 'constructor_id',
         'grid', 'position', 'points', 'status', 'fastest_lap_time',
