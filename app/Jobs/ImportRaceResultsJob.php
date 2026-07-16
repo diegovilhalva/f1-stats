@@ -8,13 +8,15 @@ use App\Models\Driver;
 use App\Models\Race;
 use App\Models\Result;
 use App\Models\Season;
+use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 
 class ImportRaceResultsJob implements ShouldQueue
 {
-    use Queueable;
+    use Batchable, Queueable;
+    
 
     public function __construct(
         public Season $season,
