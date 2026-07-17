@@ -49,9 +49,11 @@ Route::get('/system/status', function () {
 Route::get('/system/queue-debug', function () {
     try {
         return response()->json([
-            'pending_jobs' => DB::table('jobs')->count(),
+            'pending_jobs_table' => DB::table('jobs')->count(),
             'failed_jobs' => DB::table('failed_jobs')->count(),
-            'batches' => DB::table('job_batches')->select('id', 'total_jobs', 'processed_jobs', 'failed_jobs', 'finished_at')->get(),
+            'batches' => DB::table('job_batches')
+                ->select('id', 'name', 'total_jobs', 'pending_jobs', 'failed_jobs', 'finished_at')
+                ->get(),
         ]);
     } catch (\Throwable $e) {
         return response()->json(['error' => $e->getMessage()], 500);
