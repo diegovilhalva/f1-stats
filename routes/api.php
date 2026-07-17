@@ -33,3 +33,11 @@ Route::get('/system/status', function () {
         'standings' => \App\Models\Standing::count(),
     ]);
 });
+
+Route::get('/system/queue-debug', function () {
+    return response()->json([
+        'pending_jobs' => DB::table('jobs')->count(),
+        'failed_jobs' => DB::table('failed_jobs')->count(),
+        'batches' => DB::table('job_batches')->select('id', 'total_jobs', 'processed_jobs', 'failed_jobs', 'finished_at')->get(),
+    ]);
+});
