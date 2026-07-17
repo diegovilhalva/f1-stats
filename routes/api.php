@@ -10,9 +10,17 @@ Route::post('/system/import-season/{year}', function (Request $request, int $yea
         403
     );
 
-    Artisan::call('f1:import-season', ['year' => $year]);
+    try {
+        Artisan::call('f1:import-season', ['year' => $year]);
 
-    return response()->json(['status' => 'queued', 'year' => $year]);
+        return response()->json(['status' => 'queued', 'year' => $year]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ], 500);
+    }
 });
 
 
