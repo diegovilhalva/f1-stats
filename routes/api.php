@@ -59,3 +59,24 @@ Route::get('/system/queue-debug', function () {
         return response()->json(['error' => $e->getMessage()], 500);
     }
 });
+
+Route::post('/system/import-standings/{year}', function (Request $request, int $year) {
+    abort_unless(
+        hash_equals(config('services.import_token'), (string) $request->header('X-Import-Token')),
+        403
+    );
+
+    try {
+        $season = \App\Models\Season::where('year', $year)->firstOrFail();
+
+        (new \App\Jobs\ImportStandingsJob($season))->handle();
+
+        return response()->json([
+            'status' => 'completed',
+            'driver_standings' => $season->standings()->where('type', 'driver')->count(),
+            'constructor_standings' => $season->standings()->where('type', 'constructor')->count(),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage(), 'line' => $e->getLine()], 500);
+    }
+});
