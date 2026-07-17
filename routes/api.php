@@ -3,6 +3,7 @@
 use App\Console\Commands\ImportF1Season;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 
 Route::post('/system/import-season/{year}', function (Request $request, int $year) {
     abort_unless(
