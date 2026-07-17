@@ -10,16 +10,27 @@ Route::post('/system/import-season/{year}', function (Request $request, int $yea
         403
     );
 
-    try {
-        Artisan::call('f1:import-season', ['year' => $year]);
+    set_time_limit(300); 
 
-        return response()->json(['status' => 'queued', 'year' => $year]);
-    } catch (\Throwable $e) {
+    try {
+        $season = \App\Models\Season::firstOrCreate(['year' => $year]);
+
+        $races = Http::get("https://api.jolpi.ca/ergast/f1/{$year}.json", ['limit' => 100])
+            ->json('MRData.RaceTable.Races') ?? [];
+
+        foreach ($races as $raceData) {
+            (new \App\Jobs\ImportRaceResultsJob($season, (int) $raceData['round']))->handle();
+        }
+
+        (new \App\Jobs\ImportStandingsJob($season))->handle();
+
         return response()->json([
-            'error' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-        ], 500);
+            'status' => 'completed',
+            'year' => $year,
+            'races_imported' => count($races),
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json(['error' => $e->getMessage(), 'line' => $e->getLine()], 500);
     }
 });
 
