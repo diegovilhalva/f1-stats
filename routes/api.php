@@ -14,3 +14,14 @@ Route::post('/system/import-season/{year}', function (Request $request, int $yea
 
     return response()->json(['status' => 'queued', 'year' => $year]);
 });
+
+
+
+Route::get('/system/status', function () {
+    return response()->json([
+        'seasons' => \App\Models\Season::count(),
+        'races' => \App\Models\Race::count(),
+        'results' => \App\Models\Result::count(),
+        'standings' => \App\Models\Standing::count(),
+    ]);
+});
