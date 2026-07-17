@@ -4,9 +4,10 @@ FROM php:8.4-fpm-alpine AS base
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/install-php-extensions && \
-    apk add --no-cache \
-    nginx supervisor nodejs npm \
+    apk add  --no-cache \
+    nginx supervisor nodejs npm ca-certificates \
     libpng-dev libzip-dev postgresql-dev \
+    && update-ca-certificates \
     && docker-php-ext-install pdo_pgsql pgsql zip gd \
     && install-php-extensions redis
 
